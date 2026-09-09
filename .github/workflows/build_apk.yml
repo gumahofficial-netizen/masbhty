@@ -2,128 +2,38 @@ name: Build Flutter APK
 
 on:
   push:
-    branches: [ main, master, develop ]
-  pull_request:
-    branches: [ main, master, develop ]
+    branches: [ main, master ]
   workflow_dispatch:
-
-env:
-  JAVA_VERSION: '17'
-  FLUTTER_VERSION: '3.24.5'
-  FLUTTER_CHANNEL: 'stable'
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    permissions:
-      contents: read
-      packages: read
 
     steps:
-    - name: Checkout Code
+    - name: Checkout repository
       uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
 
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        distribution: 'zulu'
-        java-version: ${{ env.JAVA_VERSION }}
-        cache: 'gradle'
+        distribution: 'temurin'
+        java-version: '17'
 
     - name: Set up Flutter
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
-        channel: ${{ env.FLUTTER_CHANNEL }}
+        flutter-version: '3.19.2'
+        channel: 'stable'
         cache: true
-        cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_VERSION }}'
 
-    - name: Verify Flutter Installation
-      run: |
-        flutter --version
-        flutter doctor -v
-        dart --version
+    - name: Install dependencies
+      run: flutter pub get
 
-    - name: Clean Flutter Cache
-      run: |
-        flutter clean
-        flutter pub cache clean
+    - name: Build Release APK
+      run: flutter build apk --release
 
-    - name: Check pubspec.yaml
-      run: |
-        echo "Checking pubspec.yaml exists..."
-        if [ ! -f pubspec.yaml ]; then
-          echo "ERROR: pubspec.yaml not found!"
-          exit 1
-        fi
-        cat pubspec.yaml
-
-    - name: Get Dependencies
-      run: |
-        echo "Getting Flutter dependencies..."
-        flutter pub get --verbose
-      continue-on-error: false
-
-    - name: Verify Dependencies
-      run: |
-        echo "Verifying dependencies installation..."
-        flutter pub outdated --no-dependency-names || true
-
-    - name: Analyze Flutter Code
-      run: flutter analyze --no-pub
-      continue-on-error: true
-
-    - name: Format Check
-      run: dart format --set-exit-if-changed lib/ test/ --line-length 120
-      continue-on-error: true
-
-    - name: Build APK (Release)
-      run: |
-        flutter build apk \
-          --release \
-          --no-shrink \
-          --target-platform android-arm,android-arm64,android-x86,android-x86-64 \
-          --split-per-abi
-
-    - name: Build APK (Universal)
-      run: |
-        flutter build apk \
-          --release \
-          --no-shrink \
-          -t lib/main.dart
-
-    - name: Generate Build Info
-      if: success()
-      run: |
-        echo "Build completed successfully at $(date)" > build_info.txt
-        echo "APK Location: build/app/outputs/flutter-apk/" >> build_info.txt
-        ls -lh build/app/outputs/flutter-apk/ >> build_info.txt || true
-
-    - name: Upload APK Artifacts
-      if: success()
+    - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: flutter-apk-release
-        path: build/app/outputs/flutter-apk/
-        retention-days: 30
-        if-no-files-found: warn
-
-    - name: Upload Build Info
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: build-info
-        path: build_info.txt
-        retention-days: 7
-
-    - name: Build Summary
-      if: always()
-      run: |
-        echo "=== Build Summary ===" 
-        echo "Status: ${{ job.status }}"
-        echo "Timestamp: $(date)"
-        echo "Workflow: ${{ github.workflow }}"
-        echo "Branch: ${{ github.ref }}"
+        name: masbhty-release-apk
+        path: build/app/outputs/flutter-apk/app-release.apk
