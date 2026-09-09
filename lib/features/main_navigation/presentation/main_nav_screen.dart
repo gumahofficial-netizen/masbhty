@@ -57,7 +57,7 @@ class _MainNavScreenState extends State<MainNavScreen> {
         },
       ),
       AnalyticsScreen(storageService: widget.storageService),
-      QiblaPrayerScreen(locationService: widget.locationService),
+      const SizedBox.shrink(),
       SettingsScreen(
         storageService: widget.storageService,
         onThemeChanged: widget.onThemeChanged,
@@ -74,7 +74,12 @@ class _MainNavScreenState extends State<MainNavScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
-        onTap: (index) => setState(() => _selectedIndex = index),
+        onTap: (index) {
+          if (index == 3 && _screens[3] is SizedBox) {
+            _screens[3] = QiblaPrayerScreen(locationService: widget.locationService);
+          }
+          setState(() => _selectedIndex = index);
+        },
         type: BottomNavigationBarType.fixed,
         backgroundColor: Theme.of(context).cardColor,
         selectedItemColor: AppColors.goldPrimary,

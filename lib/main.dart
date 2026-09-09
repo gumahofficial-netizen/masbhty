@@ -12,23 +12,57 @@ import 'package:masbhty/features/onboarding/presentation/onboarding_screen.dart'
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set Preferred Orientations
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-  ]);
+  try {
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    final storageService = await StorageService.init();
+    runApp(MyApp(
+      storageService: storageService,
+      audioService: AudioService(storageService),
+      speechService: SpeechService(),
+      locationService: LocationService(),
+    ));
+  } catch (error) {
+    runApp(StartupFailureApp(message: error.toString()));
+  }
+}
 
-  // Initialize Services
-  final storageService = await StorageService.init();
-  final audioService = AudioService(storageService);
-  final speechService = SpeechService();
-  final locationService = LocationService();
+class StartupFailureApp extends StatelessWidget {
+  final String message;
 
-  runApp(MyApp(
-    storageService: storageService,
-    audioService: audioService,
-    speechService: speechService,
-    locationService: locationService,
-  ));
+  const StartupFailureApp({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      locale: const Locale('ar', 'SA'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('ar', 'SA')],
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, size: 64, color: Colors.redAccent),
+                const SizedBox(height: 16),
+                const Text('تعذر تشغيل التطبيق', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                const Text('أعد تشغيل التطبيق أو امسح بياناته إذا استمرت المشكلة.', textAlign: TextAlign.center),
+                const SizedBox(height: 16),
+                Text(message, textAlign: TextAlign.center, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class MyApp extends StatefulWidget {

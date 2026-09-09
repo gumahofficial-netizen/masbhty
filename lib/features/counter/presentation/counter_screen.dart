@@ -82,8 +82,8 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
     await widget.audioService.vibrateTap();
 
     // Check if target reached
-    if (_currentDhikr.currentCount > 0 &&
-        _currentDhikr.currentCount % _currentDhikr.targetCount == 0) {
+    final target = _currentDhikr.targetCount.clamp(1, 1000000);
+    if (_currentDhikr.currentCount > 0 && _currentDhikr.currentCount % target == 0) {
       await widget.audioService.playSuccess();
       await widget.audioService.vibrateTargetReached();
 
@@ -234,8 +234,9 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    final progress = (_currentDhikr.currentCount % _currentDhikr.targetCount) / _currentDhikr.targetCount;
-    final totalRounds = _currentDhikr.currentCount ~/ _currentDhikr.targetCount;
+    final target = _currentDhikr.targetCount.clamp(1, 1000000);
+    final progress = (_currentDhikr.currentCount % target) / target;
+    final totalRounds = _currentDhikr.currentCount ~/ target;
 
     return Scaffold(
       appBar: AppBar(

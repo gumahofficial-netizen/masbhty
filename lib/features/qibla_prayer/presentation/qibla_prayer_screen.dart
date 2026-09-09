@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:adhan/adhan.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'dart:math' as math;
@@ -16,7 +16,7 @@ class QiblaPrayerScreen extends StatefulWidget {
 }
 
 class _QiblaPrayerScreenState extends State<QiblaPrayerScreen> {
-  Position? _position;
+  StreamSubscription<CompassEvent>? _compassSubscription;
   PrayerTimes? _prayerTimes;
   double _qiblaDirection = 0.0;
   double? _compassHeading;
@@ -48,20 +48,25 @@ class _QiblaPrayerScreenState extends State<QiblaPrayerScreen> {
     final qibla = widget.locationService.calculateQiblaDirection(pos.latitude, pos.longitude);
 
     setState(() {
-      _position = pos;
       _prayerTimes = prayers;
       _qiblaDirection = qibla;
       _isLoading = false;
     });
 
     // Listen to compass
-    widget.locationService.getCompassStream()?.listen((event) {
+    _compassSubscription = widget.locationService.getCompassStream()?.listen((event) {
       if (mounted) {
         setState(() {
           _compassHeading = event.heading;
         });
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _compassSubscription?.cancel();
+    super.dispose();
   }
 
   @override

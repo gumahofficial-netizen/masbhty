@@ -26,7 +26,8 @@ class StorageService {
     }
     try {
       final List<dynamic> decoded = json.decode(azkarJson);
-      return decoded.map((e) => DhikrModel.fromMap(e)).toList();
+      final azkar = decoded.map((e) => DhikrModel.fromMap(e)).toList();
+      return azkar.isEmpty ? DefaultAzkar.list : azkar;
     } catch (_) {
       return DefaultAzkar.list;
     }
