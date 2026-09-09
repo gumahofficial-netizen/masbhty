@@ -50,20 +50,27 @@ jobs:
     - name: Clean Flutter Cache
       run: |
         flutter clean
-        flutter pub cache repair
+        flutter pub cache clean
 
-    - name: Configure Git Credentials
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check pubspec.yaml
       run: |
-        git config --global credential.helper store
-        echo "https://x-access-token:${GITHUB_TOKEN}@github.com" > ~/.git-credentials
-        git config --global url."https://github.com/".insteadOf "git://github.com/"
+        echo "Checking pubspec.yaml exists..."
+        if [ ! -f pubspec.yaml ]; then
+          echo "ERROR: pubspec.yaml not found!"
+          exit 1
+        fi
+        cat pubspec.yaml
 
     - name: Get Dependencies
       run: |
-        flutter pub get
-        flutter pub upgrade --dry-run
+        echo "Getting Flutter dependencies..."
+        flutter pub get --verbose
+      continue-on-error: false
+
+    - name: Verify Dependencies
+      run: |
+        echo "Verifying dependencies installation..."
+        flutter pub outdated --no-dependency-names || true
 
     - name: Analyze Flutter Code
       run: flutter analyze --no-pub
