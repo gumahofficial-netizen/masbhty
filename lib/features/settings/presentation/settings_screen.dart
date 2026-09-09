@@ -11,7 +11,7 @@ class SettingsScreen extends StatefulWidget {
   final StorageService storageService;
   final VoidCallback onThemeChanged;
 
-  const SettingsScreen({Key? key, required this.storageService, required this.onThemeChanged}) : super(key: key);
+  const SettingsScreen({super.key, required this.storageService, required this.onThemeChanged});
 
   @override
   State<SettingsScreen> createState() => _SettingsScreenState();

@@ -5,7 +5,7 @@ import 'package:masbhty/core/services/storage_service.dart';
 class AnalyticsScreen extends StatelessWidget {
   final StorageService storageService;
 
-  const AnalyticsScreen({Key? key, required this.storageService}) : super(key: key);
+  const AnalyticsScreen({super.key, required this.storageService});
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +88,7 @@ class AnalyticsScreen extends StatelessWidget {
                     const SizedBox(height: 10),
                     LinearProgressIndicator(
                       value: goalProgress,
-                      backgroundColor: AppColors.goldPrimary.withOpacity(0.2),
+                      backgroundColor: AppColors.goldPrimary.withValues(alpha: 0.2),
                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.emeraldPrimary),
                       minHeight: 12,
                       borderRadius: BorderRadius.circular(6),

@@ -15,11 +15,11 @@ class CounterScreen extends StatefulWidget {
   final SpeechService speechService;
 
   const CounterScreen({
-    Key? key,
+    super.key,
     required this.storageService,
     required this.audioService,
     required this.speechService,
-  }) : super(key: key);
+  });
 
   @override
   State<CounterScreen> createState() => _CounterScreenState();
@@ -266,7 +266,7 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
           gradient: LinearGradient(
             colors: [
               Theme.of(context).scaffoldBackgroundColor,
-              AppColors.emeraldDark.withOpacity(0.15),
+              AppColors.emeraldDark.withValues(alpha: 0.15),
             ],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -286,7 +286,7 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
+                        color: Colors.black.withValues(alpha: 0.05),
                         blurRadius: 10,
                         offset: const Offset(0, 4),
                       ),
@@ -325,9 +325,9 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
                   margin: const EdgeInsets.symmetric(horizontal: 16),
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.redAccent.withOpacity(0.1),
+                    color: Colors.redAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.redAccent.withOpacity(0.5)),
+                    border: Border.all(color: Colors.redAccent.withValues(alpha: 0.5)),
                   ),
                   child: Row(
                     children: [
@@ -368,7 +368,7 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
                             child: CircularProgressIndicator(
                               value: progress == 0 && _currentDhikr.currentCount > 0 ? 1.0 : progress,
                               strokeWidth: 12,
-                              backgroundColor: AppColors.goldPrimary.withOpacity(0.2),
+                              backgroundColor: AppColors.goldPrimary.withValues(alpha: 0.2),
                               valueColor: const AlwaysStoppedAnimation<Color>(AppColors.goldPrimary),
                               strokeCap: StrokeCap.round,
                             ),
@@ -382,7 +382,7 @@ class _CounterScreenState extends State<CounterScreen> with SingleTickerProvider
                               gradient: AppColors.emeraldGoldGradient,
                               boxShadow: [
                                 BoxShadow(
-                                  color: AppColors.emeraldPrimary.withOpacity(0.4),
+                                  color: AppColors.emeraldPrimary.withValues(alpha: 0.4),
                                   blurRadius: 25,
                                   spreadRadius: 5,
                                 ),

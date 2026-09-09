@@ -19,13 +19,13 @@ class MainNavScreen extends StatefulWidget {
   final VoidCallback onThemeChanged;
 
   const MainNavScreen({
-    Key? key,
+    super.key,
     required this.storageService,
     required this.audioService,
     required this.speechService,
     required this.locationService,
     required this.onThemeChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<MainNavScreen> createState() => _MainNavScreenState();

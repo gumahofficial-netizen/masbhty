@@ -38,12 +38,12 @@ class MyApp extends StatefulWidget {
   final LocationService locationService;
 
   const MyApp({
-    Key? key,
+    super.key,
     required this.storageService,
     required this.audioService,
     required this.speechService,
     required this.locationService,
-  }) : super(key: key);
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();

@@ -8,10 +8,10 @@ class DhikrLibraryScreen extends StatefulWidget {
   final Function(String dhikrId) onSelectDhikr;
 
   const DhikrLibraryScreen({
-    Key? key,
+    super.key,
     required this.storageService,
     required this.onSelectDhikr,
-  }) : super(key: key);
+  });
 
   @override
   State<DhikrLibraryScreen> createState() => _DhikrLibraryScreenState();

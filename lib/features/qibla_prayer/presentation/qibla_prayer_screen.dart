@@ -9,7 +9,7 @@ import 'package:masbhty/core/services/location_service.dart';
 class QiblaPrayerScreen extends StatefulWidget {
   final LocationService locationService;
 
-  const QiblaPrayerScreen({Key? key, required this.locationService}) : super(key: key);
+  const QiblaPrayerScreen({super.key, required this.locationService});
 
   @override
   State<QiblaPrayerScreen> createState() => _QiblaPrayerScreenState();

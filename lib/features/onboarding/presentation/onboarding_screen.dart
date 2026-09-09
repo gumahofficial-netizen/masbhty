@@ -14,13 +14,13 @@ class OnboardingScreen extends StatefulWidget {
   final VoidCallback onThemeChanged;
 
   const OnboardingScreen({
-    Key? key,
+    super.key,
     required this.storageService,
     required this.audioService,
     required this.speechService,
     required this.locationService,
     required this.onThemeChanged,
-  }) : super(key: key);
+  });
 
   @override
   State<OnboardingScreen> createState() => _OnboardingScreenState();
@@ -53,6 +53,26 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       isSpecial: true,
     ),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController.addListener(_handlePageChanged);
+  }
+
+  void _handlePageChanged() {
+    final page = _pageController.page?.round();
+    if (page != null && page != _currentPage && mounted) {
+      setState(() => _currentPage = page);
+    }
+  }
+
+  @override
+  void dispose() {
+    _pageController.removeListener(_handlePageChanged);
+    _pageController.dispose();
+    super.dispose();
+  }
 
   void _finishOnboarding() async {
     await widget.storageService.setHasSeenOnboarding(true);
@@ -109,7 +129,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: _items.length,
-                onChanged: (idx) => setState(() => _currentPage = idx),
                 itemBuilder: (context, index) {
                   final item = _items[index];
                   return Padding(
@@ -124,7 +143,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                             gradient: AppColors.goldGradient,
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.goldPrimary.withOpacity(0.3),
+                                color: AppColors.goldPrimary.withValues(alpha: 0.3),
                                 blurRadius: 20,
                                 spreadRadius: 5,
                               )
