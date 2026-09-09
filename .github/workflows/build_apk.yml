@@ -11,6 +11,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
 
     - name: Set up Java
       uses: actions/setup-java@v4
@@ -35,8 +38,36 @@ jobs:
         rm -rf pubspec.lock
         flutter clean
 
-    - name: Install Dependencies
-      run: flutter pub get
+    - name: Configure Git for private dependencies
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        if [ -n "$GITHUB_TOKEN" ]; then
+          git config --global url."https://x-access-token:${GITHUB_TOKEN}@github.com/".insteadOf "https://github.com/"
+          echo "Configured git to use GITHUB_TOKEN for github.com URLs"
+        else
+          echo "GITHUB_TOKEN not set; skipping git credential configuration."
+        fi
+
+    - name: Install Dependencies (verbose)
+      run: |
+        set -o pipefail
+        # run pub get and capture verbose output; preserve pipe exit status
+        flutter pub get --verbose 2>&1 | tee pub_get_verbose.log
+        status=${PIPESTATUS[0]}
+        echo "PUB_GET_EXIT_STATUS=$status" >> pub_get_verbose.log
+        if [ $status -ne 0 ]; then
+          echo "flutter pub get failed with exit code $status; pub_get_verbose.log was created."
+          # exit with non-zero so job fails (artifact upload runs in next step with always())
+          exit $status
+        fi
+
+    - name: Upload pub get log
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: pub-get-log
+        path: pub_get_verbose.log
 
     - name: Analyze Code
       run: flutter analyze
